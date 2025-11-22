@@ -4,7 +4,7 @@ N:
 M:
     .word 5
 K:
-    .word 5
+    .word 4
 
 matrix:
     .word 1, 1, 1, 1, 1, 1
@@ -16,15 +16,20 @@ result:
     .word 0
 
 .text
-la a2, N
-la a3, M
-la a4, K
-la a5, matrix
-la a6, result
-call process
-la a2, result
-call print
-call exit
+    la  a2, N
+    la  a3, M
+    la  a4, K
+
+    lw t0, 0(a3)
+    lw t1, 0(a4)
+    ble t0, t1, exit
+
+    la a5, matrix
+    la a6, result
+    call process
+    la a2, result
+    call print
+    call exit
 
 print:
     lw   t1, 0(a2)
@@ -52,15 +57,14 @@ init:
     mul  t4, t1, t3
     li   t3, 4
     mul  t4, t4, t3
-    add  a4, a4, t4
-    addi a4, a4, 4
+    add  a5, a5, t4
     addi t4, x0, 0
 
 cycle:
-    lw   t6, 0(a4)    # load value from array
-    addi a4, a4, 4  # increment array pointer
+    lw   t6, 0(a5)  # load value from array
+    addi a5, a5, 4  # increment array pointer
     add  t5, t5, t6 # count sum
     addi t4, t4, 1
-    blt  t4, t2, cycle
+    blt  t4, t1, cycle
     sw   t5, 0(a6)
     ret
